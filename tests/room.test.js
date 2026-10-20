@@ -59,3 +59,32 @@ test('movement is bounded and unreasonable jumps are capped',async()=>{
  assert(room.state.players[0].x<.6);
  assert(room.state.players[0].y<.7);
 });
+
+
+test('Memory Garden keeps both choices hidden until joint reveal and resets on replay',async()=>{
+ const {room,makeSocket}=fixture();await room.ready;
+ const a=makeSocket('a'),b=makeSocket('b');room.state.players=[{id:'a'},{id:'b'}];
+ await action(room,a,'garden',{choice:'star'});
+ assert.deepEqual(room.forPlayer('b').garden.answers,{});
+ assert.equal(room.forPlayer('a').garden.answers.a,'star');
+ await action(room,b,'garden',{choice:'moon'});
+ assert(room.state.completed.includes('garden'));
+ assert.deepEqual(room.forPlayer('b').garden.answers,{a:'star',b:'moon'});
+ await action(room,b,'reset',{game:'garden'});
+ assert.equal(room.state.garden.round,1);
+ assert.deepEqual(room.state.garden.answers,{});
+});
+test('Memory Garden requires a second player and rejects invalid choices',async()=>{
+ const {room,makeSocket}=fixture();await room.ready;
+ const a=makeSocket('a'),b=makeSocket('b');room.state.players=[{id:'a'}];
+ await action(room,a,'garden',{choice:'star'});
+ assert.deepEqual(room.state.garden.answers,{});
+ room.state.players.push({id:'b'});
+ await action(room,a,'garden',{choice:'invalid'});
+ assert.deepEqual(room.state.garden.answers,{});
+ await action(room,a,'garden',{choice:'sun'});
+ await action(room,a,'garden',{choice:'moon'});
+ assert.equal(room.state.garden.answers.a,'sun');
+ await action(room,b,'garden',{choice:'star'});
+ assert(room.state.completed.includes('garden'));
+});

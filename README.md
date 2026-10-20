@@ -35,3 +35,10 @@ If Pages still reports 404, check **Actions** for Pages deployment success, ensu
 ## Checks performed
 
 `node --test tests/room.test.js` passed 4/4 and JS syntax checks passed. Real browser and deployed Cloudflare multiplayer are **not yet verified**.
+
+
+## Phase 3: Memory Garden
+
+A fourth synchronized game has been added. Players select one of three constellation symbols privately, and the result is revealed only after both have answered. This chapter can be replayed independently. The island scene, quest list, and progress display now count four fragments.
+
+**Publish to GitHub Pages:** upload the contents of this ZIP to the repository root, commit to `main`, and configure Settings → Pages → Deploy from branch → `main` `/docs`. GitHub Pages supports the local two-tab demo only. For online Windows/Mac multiplayer, deploy the Cloudflare Worker with `npx wrangler deploy`; configure a Cloudflare account and follow its authentication prompts. Do not expect GitHub Pages to host WebSockets or Durable Objects.
