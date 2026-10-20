@@ -80,8 +80,8 @@ begin
     if p_command <> 'create' then raise exception 'Room not found'; end if;
     g := jsonb_build_object('players','[]'::jsonb,'completed','[]'::jsonb,
       'same',jsonb_build_object('answers','{}'::jsonb,'round',0),
-      'clues',jsonb_build_object('sequence',jsonb_build_array('✦','✳','☾','✦'),'attempts',0,'round',0),
-      'switch',jsonb_build_object('ready','[]'::jsonb),
+      'clues',jsonb_build_object('sequence',jsonb_build_array('✦','✳','☾','✦','☾','✳'),'attempts',0,'round',0),
+      'switch',jsonb_build_object('ready','[]'::jsonb,'step',0),
       'garden',jsonb_build_object('answers','{}'::jsonb,'round',0));
     insert into public.bu_rooms(code,secret_hash,game_state) values(p_code,p_secret_hash,g);
     select * into r from public.bu_rooms where code=p_code for update;
@@ -109,7 +109,7 @@ begin
     if slot_count<>2 then raise exception 'Wait for your second player'; end if;
     if game='same' and not(done ? 'same') then
       choice:=p_data->>'choice';
-      if choice not in ('beach','mountains') then raise exception 'Invalid choice'; end if;
+      if choice !~ '^[01],[01],[01]$' then raise exception 'Invalid choice'; end if;
       if (g#>'{same,answers}') ? p_user::text then raise exception 'Already answered'; end if;
       g:=jsonb_set(g,array['same','answers',p_user::text],to_jsonb(choice),true);
       if public.jsonb_object_length_safe(g#>'{same,answers}')=2 then now_completed:=true; end if;
@@ -128,10 +128,11 @@ begin
       select string_agg(value #>> '{}','' order by ord) into choice from jsonb_array_elements(g#>'{clues,sequence}') with ordinality as t(value,ord);
       now_completed:=answer=choice;
     elsif game='switch' and not(done ? 'switch') then
-      if not ((g#>'{switch,ready}') ? p_user::text) then
-        g:=jsonb_set(g,'{switch,ready}',(g#>'{switch,ready}') || to_jsonb(p_user::text));
-      end if;
-      now_completed:=jsonb_array_length(g#>'{switch,ready}')=2;
+      round_no:=coalesce((g#>>'{switch,step}')::integer,0);
+      if myself.slot <> round_no % 2 then raise exception 'Wait for your turn'; end if;
+      round_no:=round_no+1;
+      g:=jsonb_set(g,'{switch,step}',to_jsonb(round_no),true);
+      now_completed:=round_no>=4;
     elsif game='reset' then
       game:=p_data->>'game';
       if game not in ('same','clues','switch','garden') or not(done ? game) then raise exception 'Game not completed'; end if;
@@ -144,10 +145,10 @@ begin
         round_no:=coalesce((g#>>'{garden,round}')::integer,0)+1;
         g:=jsonb_set(g,'{garden}',jsonb_build_object('answers','{}'::jsonb,'round',round_no));
       elsif game='switch' then
-        g:=jsonb_set(g,'{switch}',jsonb_build_object('ready','[]'::jsonb));
+        g:=jsonb_set(g,'{switch}',jsonb_build_object('ready','[]'::jsonb,'step',0));
       elsif game='clues' then
         round_no:=coalesce((g#>>'{clues,round}')::integer,0)+1;
-        select jsonb_agg(to_jsonb(symbols[1+floor(random()*3)::integer])) into seq from generate_series(1,4);
+        select jsonb_agg(to_jsonb(symbols[1+floor(random()*3)::integer])) into seq from generate_series(1,6);
         g:=jsonb_set(g,'{clues}',jsonb_build_object('sequence',seq,'attempts',0,'round',round_no));
       end if;
     else raise exception 'Invalid or completed action';

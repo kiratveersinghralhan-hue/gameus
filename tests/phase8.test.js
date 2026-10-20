@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';const get=x=>readFileSync(new URL('../'+x,import.meta.url),'utf8');
+test('three private prediction questions are enforced server-side',()=>{assert.match(get('docs/app.js'),/brainQuestions=\[/);assert.match(get('supabase/migrations/202610200003_phase8_challenges.sql'),/\^\[01\],\[01\],\[01\]\$/)});
+test('lost signals uses six symbols in client and SQL reset',()=>{assert.match(get('docs/app.js'),/dialEntry.length!==6/);assert.match(get('supabase/migrations/202610200003_phase8_challenges.sql'),/generate_series\(1,6\)/)});
+test('four alternating pulses require backend turn checks',()=>{assert.match(get('docs/app.js'),/step>=4/);assert.match(get('supabase/migrations/202610200003_phase8_challenges.sql'),/Wait for your turn/)});
+test('heartlight finale exists and can replay',()=>{assert.match(get('docs/index.html'),/id="awakeningReplay"/);assert.match(get('docs/app.js'),/showAwakening/);assert.match(get('docs/style.css'),/height:100dvh/)});
+test('same frontend assets retained for github pages and local',()=>{for(const name of ['app.js','index.html','style.css'])assert.equal(get('docs/'+name),get('public/'+name))});
