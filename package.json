@@ -1,5 +1,5 @@
 {
- "name":"between-us","version":"0.2.0","private":true,"type":"module",
- "scripts":{"dev":"wrangler dev --local","deploy":"wrangler deploy","check":"node --check public/app.js && node --check worker/index.js", "test":"node --test tests/*.test.js"},
+ "name":"between-us","version":"0.1.0","private":true,"type":"module",
+ "scripts":{"dev":"wrangler dev --local","deploy":"wrangler deploy","check":"node --check public/app.js && node --check worker/index.js"},
  "devDependencies":{"wrangler":"^4.0.0"}
 }
