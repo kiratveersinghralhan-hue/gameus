@@ -43,6 +43,11 @@ export async function connectRoom({code,key,name,command,onState,onStatus,onErro
   channel.subscribe(status=>{onStatus(status==='SUBSCRIBED'?'Connected':status==='CHANNEL_ERROR'?'Network interrupted':'Connecting',status==='SUBSCRIBED');if(status==='SUBSCRIBED')channel.track({nickname:name}).catch(()=>{});});
   // Periodic resync covers dropped change notifications and short suspensions.
   const interval=setInterval(()=>{if(!document.hidden)refresh()},20000);
+  // Browsers suspend timers and sockets in background tabs; restore state on return.
+  const onVisible=()=>{if(!document.hidden){refresh();if(channel.state!=='joined'){client.removeChannel(channel);onStatus('Reconnect by reopening the room',false)}}};
+  document.addEventListener('visibilitychange',onVisible);
+  const onOnline=()=>refresh();
+  window.addEventListener('online',onOnline);
   return {
     send(action){
       if(stopped)return;
@@ -52,6 +57,6 @@ export async function connectRoom({code,key,name,command,onState,onStatus,onErro
         api('action',action).then(onState).catch(e=>onError(e.message));
       }
     },
-    close(){stopped=true;clearInterval(interval);client.removeChannel(channel);},
+    close(){stopped=true;clearInterval(interval);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('online',onOnline);client.removeChannel(channel);},
   };
 }
