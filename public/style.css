@@ -15,3 +15,20 @@ html,body{height:100%;overscroll-behavior:none}body{overflow:hidden}.screen,.lan
 @media(max-width:800px){.game{height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) minmax(125px,25dvh);grid-template-columns:1fr}.world{height:100%;min-height:0}.sidebar{height:100%;padding:14px;display:block;overflow-y:auto}.sidebar .side-head p,.sidebar .side-divider{display:none}.sidebar .side-head h3{font-size:17px;margin:0 0 5px}.sidebar .quest{display:inline-flex;width:46%;min-width:130px}.world-label{top:83px}.room-panel{top:140px}.world-bottom{bottom:8px}.mobile-controls{bottom:35px;left:10px}.mobile-controls button{width:36px;height:36px}.landing{overflow-y:auto}.landing-content{padding-top:75px;padding-bottom:15px}.landing-art{min-height:100%;}.landing-panel{padding:14px}.footer-note{margin-top:12px}}
 @media(prefers-reduced-motion:reduce){.awakening-stars{animation:none}}
 .island-journey{padding:14px;margin:12px 0 20px;border:1px solid #a3d1d555;border-radius:13px;background:linear-gradient(130deg,#273c56a6,#353054a6)}.island-journey p{font-size:11px;line-height:1.6;color:#c1d1de}.journey-action{width:100%;padding:12px;border-radius:9px;border:1px solid #bddae855;background:#a1dbd82e;color:#f0f4ff;cursor:pointer}.journey-action:disabled{opacity:.5;cursor:not-allowed}.island-journey.unlocked{box-shadow:0 0 28px #89dab633}.world{height:calc(100dvh - 60px)!important;min-height:0!important}.game{height:calc(100dvh - 60px)!important;min-height:0!important;overflow:hidden}.sidebar{min-height:0!important;height:100%;overflow-y:auto}@media(max-width:750px){.game{height:calc(100dvh - 60px)!important;overflow:hidden}.world{min-height:0!important}}
+
+/* Phase 10: true viewport layout; independently scrollable controls */
+html,body{min-height:100%;max-width:100%;overflow-x:hidden}
+.game{height:calc(100dvh - 60px)!important;min-height:0!important;max-height:calc(100dvh - 60px);overflow:hidden;grid-template-rows:minmax(0,1fr)}
+.world{height:100%!important;min-height:0!important;overflow:hidden}
+.sidebar{height:100%;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#847ab2 transparent;padding-bottom:32px}
+.sidebar .side-foot{margin-top:18px;padding-bottom:14px}
+.preview-button{margin-top:9px;background:#9b85d229;border-color:#cfb5ff70}
+.preview-note{margin-bottom:0!important;font-size:10px!important;color:#a8a9c5!important}
+.circuit-launch{margin:0 0 12px;text-align:left;background:#9dd4e51a;border-color:#7dbfc64f}
+.circuit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(100%,350px);margin:12px auto}
+.circuit-tile{min-height:97px;background:#152a3e;border:1px solid #76bdc477;border-radius:14px;color:#f4f5ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.circuit-glyph{display:block;font-size:39px;color:#f0d798;transition:transform .24s}
+.circuit-tile small{color:#c1cee6}
+.modal-box{max-height:calc(100dvh - 32px)!important;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:800px){.game{grid-template-rows:minmax(0, 62%) minmax(0, 38%)}.sidebar{height:100%;padding:12px 14px}.world{height:100%!important}.world-label{top:75px;left:12px}.world-label h2{font-size:24px}.room-panel{top:72px;right:9px;min-width:140px;max-width:48%;padding:10px}.room-row strong{font-size:15px}.world-bottom{bottom:7px}.controls-hint{display:none}}
+@media(max-height:680px) and (min-width:801px){.sidebar{padding-top:76px}.room-panel{top:79px}.world-label{top:78px}.sidebar .side-head p{margin-bottom:8px}}

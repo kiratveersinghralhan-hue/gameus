@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+for (const folder of ['docs','public']){
+ test(`${folder}: preview and practice controls wired`,()=>{const html=fs.readFileSync(`${folder}/index.html`,'utf8');const js=fs.readFileSync(`${folder}/app.js`,'utf8');const css=fs.readFileSync(`${folder}/style.css`,'utf8');for(const id of ['previewIsland','practiceCircuit'])assert.match(html,new RegExp(`id="${id}"`));assert.match(js,/function showCircuit\(/);assert.match(js,/function showPreviewMirror\(/);assert.match(js,/previewIsland\?0:2/);assert.match(css,/\.sidebar\{height:100%;min-height:0!important;overflow-y:auto!important/);});}
